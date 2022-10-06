@@ -1,0 +1,28 @@
+편집거리 (Edit Distance)
+
+- 편집거리란 두 문자열을 비교하는 방법 중 하나로, 한 문자열 A를 다른 문자열 B로 바꾸기 위해선 몇번의 편집을 거치는지를 수치로 나타내는 방법.
+- 편집이란 문자열의 문자를 추가(insertion), 삭제(deletion), 교체(substitution), 인접한 문자를 뒤바꾸기(transposition) 등 여러 방법이 있다.
+
+예를 들어 문자열 apple이 있다면
+
+마지막 e를 빼서 appl을 만들면 appl은 apple의 deletions가 됩니다.
+appl의 뒤에 y를 추가해서 apply는 appl의 insertions가 됩니다.
+이러면 apply와 apple의 편집 거리가 2인가? 싶지만 apple의 e를 y로 바꾸기만 하면(substitution) apply가 됩니다. 따라서 편집 거리는 1입니다.
+인접한 문자를 바꾸는 예시는 abc → acb 가 있습니다.
+또 다른 예로 문자열 rear 와 rare를 보겠습니다. 이 두 문자열의 편집 거리는 아래와 같이 계산 가능합니다.
+
+e를 뺀 뒤(rar) 마지막에 e를 붙여서(rare) 총 2번의 편집을 거칩니다.
+인접한 e와 a를 바꾸고(transpose, raer), 다시 e와 r을 바꿔서(rare) 총 2번의 편집을 거칩니다.
+편집 거리를 구하는 알고리즘마다 사용하는 편집 방법이 다른데, Levenshtein 알고리즘은 insertion, deletion, substitution만 사용하고Damerau-Levenshtein 알고리즘은 거기에 tranposition를 추가로 사용합니다.
+
+SymSpell 알고리즘
+- Symspell 알고리즘은 오직 deletions만을 사용
+
+    - Symspell 알고리즘은 사전에 있는 단어의 deletions를 계산하고 사전을 구축합니다.
+    - 중국어처럼 문자가 아무리 많아도 Symspell 알고리즘은 제약이 없습니다.
+    - 문자를 바꾸거나 추가해서 후보 문자를 찾지 않기 때문입니다.
+
+
+- Reference
+    * https://github.com/HeegyuKim/symspellpy-ko?fbclid=IwAR1MbSrXro2vo1tC1ncuuJvWF5AVK3LSAti5mSKIu1LscnNtkGokWTclPqQ
+    * https://heegyukim.medium.com/symspell%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-%ED%95%9C%EA%B8%80-%EB%A7%9E%EC%B6%A4%EB%B2%95-%EA%B5%90%EC%A0%95-3def9ca00805
