@@ -4,6 +4,7 @@ from tqdm import tqdm
 import pandas as pd
 from g2pk import G2p
 
+
 random.seed(111)
 
 kor_begin = 44032
@@ -147,7 +148,7 @@ def jamo_error_data(target_list:list):
 
 
 def main():
-    df = pd.read_csv('../data/sample/colloquial_sample.csv')
+    df = pd.read_csv('../data/sample/colloquial_sample_subword.csv')
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())

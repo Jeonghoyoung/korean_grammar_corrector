@@ -78,8 +78,8 @@ def create_train_dataset(inputs, outputs, batch_size = 64, buffer_size=1024):
     dataset = dataset.shuffle(buffer_size)
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
-
     return dataset
+
 
 # 김기현 딥러닝 책 참고한 data preprocessing
 def tokenizer_text(text, tokenizer):
