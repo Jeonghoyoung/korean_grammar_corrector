@@ -64,7 +64,7 @@ class TransformerEmbedding(tf.keras.layers.Layer):
         self.pos_encoding = positional_encoding(maximum_position_encoding, self.d_model)  # 포지셔널 인코딩
         self.dropout = tf.keras.layers.Dropout(dropout_rate)  # 드롭아웃 설정
 
-    def call(self, x, training):
+    def __call__(self, x, training):
         # 최초 x의 shape = (batch_size, seq_len)
         seq_len = tf.shape(x)[1]
         out = self.embedding(x)  # shape : (batch_size, input_seq_len, d_model)
@@ -78,33 +78,38 @@ class TransformerEmbedding(tf.keras.layers.Layer):
 
 
 def scaled_dot_product_attention(q, k, v, mask=None):
-  # q shape : (batch_size, seq_len, d_model)
-  # k shape : (batch_size, seq_len, d_model)
-  # v shape : (batch_size, seq_len, d_model)
-  matmul_qk = tf.matmul(q, k, transpose_b = True)
-  #matmul_qk shape : (batch_size, seq_len, seq_len)
+    # q shape : (batch_size, seq_len, d_model)
+    # k shape : (batch_size, seq_len, d_model)
+    # v shape : (batch_size, seq_len, d_model)
+    matmul_qk = tf.matmul(q, k, transpose_b = True)
+    #matmul_qk shape : (batch_size, seq_len, seq_len)
 
-  dk = tf.cast(tf.shape(k)[-1], tf.float32)
-  scaled_attention_logits = matmul_qk / tf.math.sqrt(dk)
+    dk = tf.cast(tf.shape(k)[-1], tf.float32)
+    scaled_attention_logits = matmul_qk / tf.math.sqrt(dk)
 
-  # scaled_attetion_logits shape : (batch_size, seq_len, seq_len)
+    # scaled_attetion_logits shape : (batch_size, seq_len, seq_len)
 
-  if mask is not None:
-    scaled_attention_logits = scaled_attention_logits + (mask * -1e9)
+    if mask is not None:
+        scaled_attention_logits = scaled_attention_logits + (mask * -1e9)
 
-  softmax = tf.nn.softmax(scaled_attention_logits, axis=-1)
+    softmax = tf.nn.softmax(scaled_attention_logits, axis=-1)
 
-  # softmax shape : (batch_size, seq_len, seq_len)
+    # softmax shape : (batch_size, seq_len, seq_len)
 
-  output = tf.matmul(softmax, v)
+    output = tf.matmul(softmax, v)
 
-  # output(attention_value) shape : (batch_size, seq_len, d_model)
-  # 즉 처음 입력 차원인 (batch_size, seq_len, d_model) 차원을 아웃풋으로 반환
-  # scaled_dot_product_attention 의 결과는 단어들 간의 연관성을 학습.
-  return output, softmax
+    # output(attention_value) shape : (batch_size, seq_len, d_model)
+    # 즉 처음 입력 차원인 (batch_size, seq_len, d_model) 차원을 아웃풋으로 반환
+    # 인풋과 아웃풋의 사이즈가 동일하다.
+
+    # scaled_dot_product_attention 의 결과는 단어들 간의 연관성을 학습.
+    return output, softmax
 
 
 class MultiHeadAttention(tf.keras.layers.Layer):
+    # 멀티 헤드 어텐션은 전체 어텐션을 분리하여 병렬적으로 어텐션을 수행하는 기법.
+    # 이렇게 하는 이유는, 깊은 차원을 한번에 어텐션을 수행하는 것보다, 병렬로 각각 수행하는 것이 더 심도있는 언어들간의 관계를 학습할 수 있기 때문.
+
     def __init__(self, d_model, num_heads):
         super().__init__()
         self.num_heads = num_heads
@@ -120,46 +125,47 @@ class MultiHeadAttention(tf.keras.layers.Layer):
 
         self.dense = tf.keras.layers.Dense(d_model)
 
-        def split_heads(self, x, batch_size):
-            x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
-            return tf.transpose(x, perm=[0,2,1,3])
+    def split_heads(self, x, batch_size):
+        x = tf.reshape(x, (batch_size, -1, self.num_heads, self.depth))
+        return tf.transpose(x, perm=[0,2,1,3])
 
-        def call(self, v, k, q, mask):
-            batch_size = tf.shape(q)[0]
+    def __call__(self, v, k, q, mask):
+        batch_size = tf.shape(q)[0]
 
-            q = self.wq(q)
-            k = self.wk(k)
-            v = self.wv(v)
+        q = self.wq(q)
+        k = self.wk(k)
+        v = self.wv(v)
 
-            q = self.split_heads(q, batch_size)
-            k = self.split_heads(k, batch_size)
-            v = self.split_heads(v, batch_size)
+        q = self.split_heads(q, batch_size)
+        k = self.split_heads(k, batch_size)
+        v = self.split_heads(v, batch_size)
 
 
-            attention_weights, softmax = scaled_dot_product_attention(q, k, v, mask)
+        attention_weights, softmax = scaled_dot_product_attention(q, k, v, mask)
 
-            scaled_attention = tf.transpose(attention_weights, perm=[0,2,1,3])
+        scaled_attention = tf.transpose(attention_weights, perm=[0,2,1,3])
 
-            concat_attention = tf.reshape(scaled_attention, (batch_size, -1, self.d_model))
+        concat_attention = tf.reshape(scaled_attention, (batch_size, -1, self.d_model))
 
-            output = self.dense(concat_attention)
+        output = self.dense(concat_attention)
 
-            return output, softmax
+        return output, softmax
 
 
 class Pointwise_FeedForward_Network(tf.keras.layers.Layer):
-  def __init__(self, d_model, dff):
-    super().__init__()
-    self.d_model = d_model
-    self.dff = dff
+    # Pointwise_FeedForward_Network 에서는 인코더의 출력에서 512개의 차원이 2048차원까지 확장되고, 다시 512개의 차원으로 압축된다.
+    def __init__(self, d_model, dff):
+        super().__init__()
+        self.d_model = d_model
+        self.dff = dff
 
-    self.middle = tf.keras.layers.Dense(dff, activation='relu')
-    self.out = tf.keras.layers.Dense(d_model)
+        self.middle = tf.keras.layers.Dense(dff, activation='relu')
+        self.out = tf.keras.layers.Dense(d_model)
 
-  def call(self, x):
-    middle = self.middle(x) # middle shape : (batch_size, seq_len, dff)
-    out = self.out(middle) # out shape : (batch_size, seq_len, d_model)
-    return out
+    def __call__(self, x):
+        middle = self.middle(x) # middle shape : (batch_size, seq_len, dff)
+        out = self.out(middle) # out shape : (batch_size, seq_len, d_model)
+        return out
 
 
 class EncoderLayer(tf.keras.layers.Layer):
@@ -174,7 +180,7 @@ class EncoderLayer(tf.keras.layers.Layer):
         self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
         self.layernorm2 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
 
-    def call(self, x, training, mask=None):
+    def __call__(self, x, training, mask=None):
         # x : 위치 임베딩 + 단어 임베딩 된 인코딩의 인풋
         attn_output, _ = self.mha(x, x, x, mask)
         # 멀티헤드 어텐션
