@@ -32,7 +32,7 @@ def tokenize_and_filter(src_list, tgt_list, max_length=20):
     tokenized_src = tf.keras.preprocessing.sequence.pad_sequences(tokenized_src, maxlen=max_length, padding='post')
     tokenized_tgt = tf.keras.preprocessing.sequence.pad_sequences(tokenized_tgt, maxlen=max_length, padding='post')
 
-    return tokenized_src, tokenized_tgt
+    return tokenized_src, tokenized_tgt, tokenizer
 
 
 def create_train_dataset(inputs, outputs, batch_size = 64, buffer_size=1024):
@@ -53,8 +53,17 @@ def create_train_dataset(inputs, outputs, batch_size = 64, buffer_size=1024):
         },
     ))
 
-    dataset = dataset.cache()
-    dataset = dataset.shuffle(buffer_size)
+    dataset = dataset.cache() # cache를 활용해서 데이터를 로드할 때 빠른 처리를 기대해 봄
+    dataset = dataset.shuffle(buffer_size) # buffer_size를 전체 데이터 수보다 크게하여 완전하게 섞음
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
     return dataset
+
+
+if __name__ == '__main__':
+    i = '안뇽하세요 저는 뉴규'
+    t = '안녕하세요 저는 누구입니다.'
+    tok, s, e, v = wordpiece_tokenizer(i, t)
+    encode_i = tok.encode(i)
+    print(tok.decode(encode_i))
+
