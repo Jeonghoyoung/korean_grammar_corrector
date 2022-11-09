@@ -148,7 +148,7 @@ def jamo_error_data(target_list:list):
 
 
 def main():
-    df = pd.read_csv('../data/sample/colloquial_sample_subword.csv')
+    df = pd.read_csv('../data/sample/colloquial_sample_test.csv')
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())
@@ -187,7 +187,7 @@ def main():
 
     print(t_df.head())
 
-    t_df.to_csv('../data/colloquial_correct_train_data.csv', encoding='utf-8-sig', index=False)
+    t_df.to_csv('../data/colloquial_correct_test_data.csv', encoding='utf-8-sig', index=False)
 
 
 if __name__ == '__main__':
