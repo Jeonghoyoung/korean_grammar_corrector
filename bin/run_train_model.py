@@ -92,3 +92,5 @@ def main():
         model.save_weights(f'{config.model_name}_model_{config.output}_{config.epoch}_weights')
 
 
+if __name__ == '__main__':
+    main()

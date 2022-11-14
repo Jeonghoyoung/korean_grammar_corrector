@@ -57,17 +57,17 @@ def decompose(c):
     if not character_is_korean(c):
         return None
     i = ord(c)
-    if (jaum_begin <= i <= jaum_end):
-        return (c, ' ', ' ')
-    if (moum_begin <= i <= moum_end):
-        return (' ', c, ' ')
+    if jaum_begin <= i <= jaum_end:
+        return c, ' ', ' '
+    if moum_begin <= i <= moum_end:
+        return ' ', c, ' '
 
     # decomposition rule
     i -= kor_begin
     cho  = i // chosung_base
     jung = ( i - cho * chosung_base ) // jungsung_base
     jong = ( i - cho * chosung_base - jung * jungsung_base )
-    return (chosung_list[cho], jungsung_list[jung], jongsung_list[jong])
+    return chosung_list[cho], jungsung_list[jung], jongsung_list[jong]
 
 
 def character_is_korean(c):
@@ -97,7 +97,9 @@ def jamo_error_data(target_list:list):
 
             # Random Choose words
             if len(split_t) <= sample_num:
-                sample_num = sample_num - 1
+                print(f'{split_t} split count : {len(split_t)}')
+                print()
+                sample_num = len(split_t) - 1
                 rand_t = random.sample(range(len(split_t)), sample_num)
             else:
                 rand_t = random.sample(range(len(split_t)), sample_num)
@@ -147,8 +149,13 @@ def jamo_error_data(target_list:list):
     return result
 
 
+async def create_g2p_data(text_list):
+    g2p = G2p()
+    return [g2p(text_list[i]) for i in tqdm(range(len(text_list)))]
+
+
 def main():
-    df = pd.read_csv('../data/sample/colloquial_sample_test.csv')
+    df = pd.read_csv('../data/raw/corpus_repair_train.csv', names=['tgt'])
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())
@@ -166,12 +173,18 @@ def main():
     print(len(gtp))
     print(len(edit_dist))
 
-    g2p = G2p()
-    g2p_data = [g2p(gtp['tgt'][k]) for k in tqdm(range(len(gtp)))]
 
-    raw_gtp = gtp['tgt'].tolist()
-    gtp_df = pd.DataFrame({'src':g2p_data, 'tgt':raw_gtp})
-    gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
+    # g2p = G2p()
+    # g2p_data = [g2p(gtp['tgt'][k]) for k in tqdm(range(len(gtp)))]
+    #
+    # raw_gtp = gtp['tgt'].tolist()
+
+    # gtp_df = pd.DataFrame({'src':g2p_data, 'tgt':raw_gtp})
+    # gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
+
+    gtp_df = pd.read_csv('../data/colloquial_g2p_data.csv')
+    g2p_data = gtp_df['src'].tolist()
+    raw_gtp = gtp_df['tgt'].tolist()
 
     raw_dist = edit_dist['tgt'].tolist()
     print(len(raw_dist))
@@ -187,7 +200,7 @@ def main():
 
     print(t_df.head())
 
-    t_df.to_csv('../data/colloquial_correct_test_data.csv', encoding='utf-8-sig', index=False)
+    t_df.to_csv('../data/train/corpus_repair_train.csv', encoding='utf-8-sig', index=False)
 
 
 if __name__ == '__main__':
