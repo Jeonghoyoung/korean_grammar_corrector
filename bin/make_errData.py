@@ -155,7 +155,7 @@ async def create_g2p_data(text_list):
 
 
 def main():
-    df = pd.read_csv('../data/raw/corpus_repair_train.csv', names=['tgt'])
+    df = pd.read_csv('../data/raw/corpus_repair_test.csv', names=['tgt'])
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())
@@ -174,17 +174,16 @@ def main():
     print(len(edit_dist))
 
 
-    # g2p = G2p()
-    # g2p_data = [g2p(gtp['tgt'][k]) for k in tqdm(range(len(gtp)))]
-    #
-    # raw_gtp = gtp['tgt'].tolist()
+    g2p = G2p()
+    g2p_data = [g2p(gtp['tgt'][k]) for k in tqdm(range(len(gtp)))]
 
-    # gtp_df = pd.DataFrame({'src':g2p_data, 'tgt':raw_gtp})
-    # gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
+    raw_gtp = gtp['tgt'].tolist()
+    gtp_df = pd.DataFrame({'src':g2p_data, 'tgt':raw_gtp})
+    gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
 
-    gtp_df = pd.read_csv('../data/colloquial_g2p_data.csv')
-    g2p_data = gtp_df['src'].tolist()
-    raw_gtp = gtp_df['tgt'].tolist()
+    # gtp_df = pd.read_csv('../data/colloquial_g2p_data.csv')
+    # g2p_data = gtp_df['src'].tolist()
+    # raw_gtp = gtp_df['tgt'].tolist()
 
     raw_dist = edit_dist['tgt'].tolist()
     print(len(raw_dist))
@@ -200,7 +199,7 @@ def main():
 
     print(t_df.head())
 
-    t_df.to_csv('../data/train/corpus_repair_train.csv', encoding='utf-8-sig', index=False)
+    t_df.to_csv('../data/train/corpus_repair_test.csv', encoding='utf-8-sig', index=False)
 
 
 if __name__ == '__main__':
