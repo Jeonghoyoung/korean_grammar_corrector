@@ -88,7 +88,7 @@ def clean_korean(df:pd.DataFrame):
 def jamo_error_data(target_list:list):
     result = []
     for i in range(len(target_list)):
-        if len(target_list[i]) >= 3:
+        if len(target_list[i]) >= 1:
             # 띄어쓰기를 기준으로 split
             split_t = target_list[i].split()
 
@@ -97,8 +97,8 @@ def jamo_error_data(target_list:list):
 
             # Random Choose words
             if len(split_t) <= sample_num:
-                print(f'{split_t} split count : {len(split_t)}')
-                print()
+                # print(f'{split_t} split count : {len(split_t)}')
+                # print()
                 sample_num = len(split_t) - 1
                 rand_t = random.sample(range(len(split_t)), sample_num)
             else:
@@ -135,7 +135,7 @@ def jamo_error_data(target_list:list):
                             decompose_text[c] = random.choice(jungsung_list)
                             comp = compose(decompose_text[0], decompose_text[c], decompose_text[-1])
                 except:
-                    print(i)
+                    # print(target_list[i])
                     pass
 
                 text_l = list(replace_text)
@@ -155,7 +155,7 @@ async def create_g2p_data(text_list):
 
 
 def main():
-    df = pd.read_csv('../data/raw/corpus_repair_test.csv', names=['tgt'])
+    df = pd.read_csv('../data/korean_corpus_repair_test.csv', names=['tgt'])
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())
@@ -168,10 +168,10 @@ def main():
 
     gtp.reset_index(inplace=True, drop=True)
     edit_dist.reset_index(inplace=True, drop=True)
-
-    print(len(df))
-    print(len(gtp))
-    print(len(edit_dist))
+    #
+    # print(len(df))
+    # print(len(gtp))
+    # print(len(edit_dist))
 
 
     g2p = G2p()
@@ -182,13 +182,14 @@ def main():
     gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
 
     # gtp_df = pd.read_csv('../data/colloquial_g2p_data.csv')
-    # g2p_data = gtp_df['src'].tolist()
-    # raw_gtp = gtp_df['tgt'].tolist()
+    g2p_data = gtp_df['src'].tolist()
+    raw_gtp = gtp_df['tgt'].tolist()
 
     raw_dist = edit_dist['tgt'].tolist()
     print(len(raw_dist))
     jamo_error_list = jamo_error_data(raw_dist)
     print(len(jamo_error_list))
+
     jamo_err_df = pd.DataFrame({'src': jamo_error_list, 'tgt': raw_dist})
     jamo_err_df.to_csv('../data/colloquial_jamo_error_data.csv', encoding='utf-8-sig', index=False)
 
@@ -199,7 +200,7 @@ def main():
 
     print(t_df.head())
 
-    t_df.to_csv('../data/train/corpus_repair_test.csv', encoding='utf-8-sig', index=False)
+    t_df.to_csv('../data/train/korean_corpus_repair_test.csv', encoding='utf-8-sig', index=False)
 
 
 if __name__ == '__main__':

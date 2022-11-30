@@ -1,3 +1,5 @@
+import sys
+sys.path.append('/Users/hoyoung/Desktop/pycharm_work/korean_grammar_corrector/bin/model')
 import tensorflow as tf
 from multi_head_attention import *
 from position_wise_nn import *

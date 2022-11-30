@@ -25,7 +25,9 @@ class PositionalEncoding(tf.keras.layers.Layer):
 
     def __init__(self, position, d_model):
         super(PositionalEncoding, self).__init__()
-        self.pos_encoding = self.positional_encoding(position, d_model)
+        self.position = position
+        self.d_model = d_model
+        self.pos_encoding = self.positional_encoding(self.position, self.d_model)
 
     def get_angles(self, position, i, d_model):
         angles = 1 / tf.pow(10000, (2 * (i // 2)) / tf.cast(d_model, tf.float32))
