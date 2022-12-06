@@ -53,15 +53,23 @@ def transformer(vocab_size, num_layers, dff, d_model, num_heads, dropout, name='
     return tf.keras.Model(inputs=[inputs, dec_inputs], outputs=outputs, name=name)
 
 
-if __name__ == '__main__':
-    small_transformer = transformer(
-        vocab_size= 9000,
-        num_layers=4,
-        dff=512,
-        d_model=128,
-        num_heads=4,
-        dropout=0.3,
-        name="small_transformer")
+def Transformer_Model(vocab_size, num_layers, dff, d_model, num_heads, dropout, name):
+    model = transformer(
+        vocab_size=vocab_size,
+        num_layers=num_layers,
+        dff=dff,
+        d_model=d_model,
+        num_heads=num_heads,
+        dropout=dropout,
+        name=name
+    )
+    return model
 
-    tf.keras.utils.plot_model(
-        small_transformer, to_file='../../model_img/small_transformer.png', show_shapes=True)
+
+def model_plot(model, save_path):
+    tf.keras.utils.plot_model(model, to_file=save_path, show_shapes=False)
+    return None
+
+
+if __name__ == '__main__':
+    small_transformer = Transformer_Model(vocab_size=9000, d_model=256, num_layers=4, num_heads=4, dff=512, dropout=0.1, name='test')

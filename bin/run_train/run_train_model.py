@@ -53,13 +53,6 @@ class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
         arg2 = step * (self.warmup_steps**-1.5)
 
         return tf.math.rsqrt(self.d_model) * tf.math.minimum(arg1, arg2)
-    # 
-    # def get_config(self):
-    #     config ={
-    #         'd_model': self.d_model,
-    #         'warmup_steps': self.warmup_steps
-    #     }
-    #     return config
 
 
 def accuracy(y_true, y_pred):
@@ -67,6 +60,8 @@ def accuracy(y_true, y_pred):
     y_true = tf.reshape(y_true, shape = (-1, MAX_LENGTH-1))
     return tf.keras.metrics.sparse_categorical_accuracy(y_true, y_pred)
 
+def save_checkpoint(save_path):
+    return tf.keras.callbacks.ModelCheckpoint(filepath=save_path, save_weights_only=True, verbose=1)
 
 def main():
     configs = args()
@@ -99,13 +94,7 @@ def main():
 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=[accuracy])
 
-    checkpoint_path = configs.save_path
-    # checkpoint_dir = os.path.dirname(checkpoint_path)
-
-    # 모델의 가중치를 저장하는 콜백 만들기
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
-                                                     save_weights_only=True,
-                                                     verbose=1)
+    cp_callback = save_checkpoint(configs.save_path)
 
     if configs.save_model is not None:
         model.fit(dataset, epochs=configs.epoch, callbacks=[cp_callback])

@@ -155,7 +155,7 @@ async def create_g2p_data(text_list):
 
 
 def main():
-    df = pd.read_csv('../data/korean_corpus_repair_test.csv', names=['tgt'])
+    df = pd.read_csv('../../data/train/20221130/korean_corpus_test_20221130.csv', names=['tgt'])
     df['tgt'] = df.apply(lambda x: x['tgt'].strip(), axis=1)
     print(len(df))
     print(df.head())
@@ -179,7 +179,7 @@ def main():
 
     raw_gtp = gtp['tgt'].tolist()
     gtp_df = pd.DataFrame({'src':g2p_data, 'tgt':raw_gtp})
-    gtp_df.to_csv('../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
+    gtp_df.to_csv('../../data/colloquial_g2p_data.csv', encoding='utf-8-sig', index=False)
 
     # gtp_df = pd.read_csv('../data/colloquial_g2p_data.csv')
     g2p_data = gtp_df['src'].tolist()
@@ -191,7 +191,7 @@ def main():
     print(len(jamo_error_list))
 
     jamo_err_df = pd.DataFrame({'src': jamo_error_list, 'tgt': raw_dist})
-    jamo_err_df.to_csv('../data/colloquial_jamo_error_data.csv', encoding='utf-8-sig', index=False)
+    jamo_err_df.to_csv('../../data/colloquial_jamo_error_data.csv', encoding='utf-8-sig', index=False)
 
     src = g2p_data + jamo_error_list
     tgt = raw_gtp + raw_dist
@@ -200,7 +200,7 @@ def main():
 
     print(t_df.head())
 
-    t_df.to_csv('../data/train/korean_corpus_repair_test.csv', encoding='utf-8-sig', index=False)
+    t_df.to_csv('../../data/train/korean_corpus_test_20221201.csv', encoding='utf-8-sig', index=False)
 
 
 if __name__ == '__main__':
