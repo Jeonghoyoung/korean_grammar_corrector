@@ -18,15 +18,9 @@ def wordpiece_tokenizer(src_list, tgt_list):
 
 def tokenize_and_filter(src_list, tgt_list, max_length=20):
     tokenizer, START_TOKEN, END_TOKEN, VOCAB_SIZE = wordpiece_tokenizer(src_list, tgt_list)
-    tokenized_src,tokenized_tgt = [], []
 
-    for sent1, sent2 in zip(src_list, tgt_list):
-        # encoding, 시작 토큰, 종료 토큰 추가
-        sent1 = START_TOKEN + tokenizer.encode(sent1) + END_TOKEN
-        sent2 = START_TOKEN + tokenizer.encode(sent2) + END_TOKEN
-
-        tokenized_src.append(sent1)
-        tokenized_tgt.append(sent2)
+    tokenized_src = [START_TOKEN + tokenizer.encode(sent) + END_TOKEN for sent in src_list]
+    tokenized_tgt = [START_TOKEN + tokenizer.encode(sent) + END_TOKEN for sent in tgt_list]
 
     # padding
     tokenized_src = tf.keras.preprocessing.sequence.pad_sequences(tokenized_src, maxlen=max_length, padding='post')
@@ -58,6 +52,15 @@ def create_train_dataset(inputs, outputs, batch_size = 64, buffer_size=1024):
     dataset = dataset.batch(batch_size)
     dataset = dataset.prefetch(tf.data.experimental.AUTOTUNE)
     return dataset
+
+
+def save_tokenizer(tokenizer, path, filename):
+    return tokenizer.save_to_file(path + '/' + filename)
+
+
+def load_tokenizer(path, filename):
+    load_model = tfds.deprecated.text.SubwordTextEncoder.load_from_file(path + '/' + filename)
+    return load_model
 
 
 if __name__ == '__main__':
