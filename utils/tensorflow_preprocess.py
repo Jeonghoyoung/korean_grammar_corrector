@@ -54,6 +54,15 @@ def create_train_dataset(inputs, outputs, batch_size = 64, buffer_size=1024):
     return dataset
 
 
+def data2tensor(src_list, tgt_list, max_length, batch_size):
+    src = full_stop_filter(src_list)
+    tgt = full_stop_filter(tgt_list)
+
+    inputs, outputs, tokenizer = tokenize_and_filter(src, tgt, max_length)
+    tensor_dataset = create_train_dataset(inputs, outputs, batch_size, buffer_size=len(src)+1)
+    return tensor_dataset
+
+
 def save_tokenizer(tokenizer, path, filename):
     return tokenizer.save_to_file(path + '/' + filename)
 
