@@ -8,11 +8,11 @@ from transformer_model import *
 from predict import *
 
 if __name__ == '__main__':
-    testset = pd.read_csv('../data/train/20221130/korean_corpus_test_20221130.csv', names=['src', 'ref'])
+    testset = pd.read_csv('../data/train/korean_corpus_test_20221201.csv', names=['src', 'ref'])
     print(testset.head(3))
     model_path = '../checkpoint_20221205/cp.ckpt'
     
-    tokenizer = load_tokenizer(path='../' ,filename='tokenizer.tok')
+    tokenizer = load_tokenizer(path='../tokenizer.tok')
     model = Transformer_Model(vocab_size=tokenizer.vocab_size+2, d_model=128, num_layers=4, num_heads=4, dff=256, dropout=0.1, name='test')
     model.load_weights(model_path)
 

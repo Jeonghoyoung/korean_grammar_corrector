@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 import random
-import utils.file_util as ft
+import file_util as ft
 import argparse
 
 # logging.basicConfig(filename='./sampling.log', level=logging.INFO)

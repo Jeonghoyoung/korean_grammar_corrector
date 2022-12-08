@@ -67,8 +67,8 @@ def save_tokenizer(tokenizer, path, filename):
     return tokenizer.save_to_file(path + '/' + filename)
 
 
-def load_tokenizer(path, filename):
-    load_model = tfds.deprecated.text.SubwordTextEncoder.load_from_file(path + '/' + filename)
+def load_tokenizer(path):
+    load_model = tfds.deprecated.text.SubwordTextEncoder.load_from_file(path)
     return load_model
 
 
