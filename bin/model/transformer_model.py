@@ -54,6 +54,7 @@ def transformer(vocab_size, num_layers, dff, d_model, num_heads, dropout, name='
 
 
 def Transformer_Model(vocab_size, num_layers, dff, d_model, num_heads, dropout, name):
+    tf.keras.backend.clear_session()
     model = transformer(
         vocab_size=vocab_size,
         num_layers=num_layers,
