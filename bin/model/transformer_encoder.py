@@ -7,6 +7,7 @@ from positional_encoding import *
 
 # 어텐션시 패딩 토큰을 제외하도록 패딩 마스크 사용. (MultiHeadAttention 함수의 mask의 인자값으로 padding_mask가 사용되는 이유)
 # 인코터는 총 두개의 서브층(멀티헤드어텐션, 포지션 와이즈 피드포워드 신경망) 각 서브층 이후에는 Add & Normalization
+
 def encoder_layer(dff, d_model, num_heads, dropout, name="encoder_layer"):
     # 하나의 인코더 층을 구현하는 코드, 실제 트랜스포머는 num_layers 개수만큼의 인코더 층을 사용하므로 이를 여러번 쌓는 코드 구현 필요.
     inputs = tf.keras.Input(shape=(None, d_model), name="inputs")

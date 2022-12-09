@@ -66,13 +66,11 @@ class MultiHeadAttention(tf.keras.layers.Layer):
         # WO에 해당하는 밀집층 정의
         self.dense = tf.keras.layers.Dense(units=d_model)
 
-
   # num_heads 개수만큼 q, k, v를 split하는 함수
     def split_heads(self, inputs, batch_size):
         inputs = tf.reshape(
             inputs, shape=(batch_size, -1, self.num_heads, self.depth))
         return tf.transpose(inputs, perm=[0, 2, 1, 3])
-
 
     def call(self, inputs):
         query, key, value, mask = inputs['query'], inputs['key'], inputs[

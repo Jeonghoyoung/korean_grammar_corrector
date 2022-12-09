@@ -78,20 +78,23 @@ class Trainer:
             print('Not Supported Data Type ---')
             return None
 
-    def train(self, data, d_type):
+    def train(self, data, d_type, model=None):
         df = self.__load_data(data, d_type)
         print(df.head())
 
         print('!!!!!!!!!!!!!!!!! Convert data !!!!!!!!!!!!!!!!!')
         dataset, tokenizer = data2tensor(df['src'].tolist(), df['tgt'].tolist(), self.max_length, self.batch_size)
 
-        transformer_model = Transformer_Model(vocab_size=tokenizer.vocab_size + 2,
-                                              d_model=self.d_model,
-                                              num_layers=self.num_layers,
-                                              num_heads=self.num_heads,
-                                              dff=self.dff,
-                                              dropout=self.dropout,
-                                              name='Corpus-Repair')
+        if model is not None:
+            transformer_model = model
+        else:
+            transformer_model = Transformer_Model(vocab_size=tokenizer.vocab_size + 2,
+                                                  d_model=self.d_model,
+                                                  num_layers=self.num_layers,
+                                                  num_heads=self.num_heads,
+                                                  dff=self.dff,
+                                                  dropout=self.dropout,
+                                                  name='Corpus-Repair')
 
         learning_rate = CustomSchedule(d_model=self.d_model)
         optimizer = tf.keras.optimizers.Adam(learning_rate, beta_1=0.9, beta_2=0.98, epsilon=1e-9)
@@ -114,4 +117,4 @@ if __name__ == '__main__':
 
     transformer_trainer = Trainer(save_path='../..', tokenizer_name='test_tok', model_name='cpk_test', epochs=3)
 
-    model = transformer_trainer.train(path, d_type='path')
+    tesT_model = transformer_trainer.train(path, d_type='path', model=None)
