@@ -7,7 +7,6 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))  # 상위 상위 폴더 내 모듈 참조
 from utils.tensorflow_preprocess import *
 from model.transformer_model import *
-# from transformer import *
 
 
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
@@ -41,7 +40,6 @@ class Trainer:
         self.batch_size = batch_size
         self.epochs = epochs
 
-
     def accuracy(self, y_true, y_pred):
         # 레이블의 크기 : (batch_size, MAX_LENGTH - 1)
         y_true = tf.reshape(y_true, shape=(-1, self.max_length - 1))
@@ -62,7 +60,7 @@ class Trainer:
         return tf.reduce_mean(loss)
 
     def __load_data(self, data, d_type):
-        # type() 통해 문자열인 경우 경로로 판단하여 read 부터 시행.
+        # type() 통해 문자열인 경우 경로로 판단하여 READ 부터 시행.
         if d_type == 'path':
             extension = os.path.splitext(data)[1]
             if extension == '.csv':

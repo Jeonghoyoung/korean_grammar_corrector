@@ -168,11 +168,6 @@ def main():
 
     gtp.reset_index(inplace=True, drop=True)
     edit_dist.reset_index(inplace=True, drop=True)
-    #
-    # print(len(df))
-    # print(len(gtp))
-    # print(len(edit_dist))
-
 
     g2p = G2p()
     g2p_data = [g2p(gtp['tgt'][k]) for k in tqdm(range(len(gtp)))]
