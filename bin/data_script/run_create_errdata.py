@@ -8,6 +8,7 @@ from utils.g2p_util import *
 from utils.convert_jamo_util import *
 from utils.parallel_util import *
 
+# 속도 개선 -> pandas.DataFrame.apply 를 병렬 프로그램으로 변경
 
 def args():
     parser = argparse.ArgumentParser()
@@ -28,7 +29,7 @@ def create_errdata(input_path, output):
 
     gtp = parallel_dataframe(gtp, convert_g2p)
     gtp.to_csv(f'{output}/corpus_repair_g2p_data.csv', encoding='utf-8-sig', index=False)
-    
+
     jamo_error = parallel_dataframe(jamo_error, convert_jamo)
     jamo_error.to_csv(f'{output}/corpus_repair_jamo_error_data.csv', encoding='utf-8-sig', index=False)
 

@@ -16,4 +16,3 @@ class Pointwise_FeedForward_Network(tf.keras.layers.Layer):
         middle = self.middle(x) # middle shape : (batch_size, seq_len, dff)
         out = self.out(middle) # out shape : (batch_size, seq_len, d_model)
         return out
-

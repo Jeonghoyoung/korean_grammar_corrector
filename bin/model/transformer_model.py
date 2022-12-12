@@ -73,4 +73,6 @@ def model_plot(model, save_path):
 
 
 if __name__ == '__main__':
-    small_transformer = Transformer_Model(vocab_size=9000, d_model=256, num_layers=4, num_heads=4, dff=512, dropout=0.1, name='test')
+    small_transformer = Transformer_Model(vocab_size=2000, d_model=256, num_layers=1, num_heads=4, dff=512, dropout=0.1, name='test')
+    print(small_transformer.summary())
+    model_plot(small_transformer, '../raw_transformer.png')
