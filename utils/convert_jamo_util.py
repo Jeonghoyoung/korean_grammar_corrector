@@ -62,7 +62,7 @@ def decompose(c):
 
     # decomposition rule
     i -= kor_begin
-    cho  = i // chosung_base
+    cho = i // chosung_base
     jung = ( i - cho * chosung_base ) // jungsung_base
     jong = ( i - cho * chosung_base - jung * jungsung_base )
     return chosung_list[cho], jungsung_list[jung], jongsung_list[jong]

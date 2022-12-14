@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))  # 상위 상위 폴더 내 모듈 참조
 from utils.tensorflow_preprocess import *
 from model.transformer_model import *
+from keras_model.keras_tensorflow_cust import *
 
 
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):
@@ -30,6 +31,7 @@ class Trainer:
         self.save_path = save_path
         self.tokenizer_name = tokenizer_name
         self.model_name = model_name
+
         # Model Parameters
         self.d_model = d_model
         self.num_layers = num_layers
@@ -88,7 +90,7 @@ class Trainer:
         if model is not None:
             transformer_model = model
         else:
-            transformer_model = Transformer_Model(vocab_size=tokenizer.vocab_size + 2,
+            transformer_model = Model(vocab_size=tokenizer.vocab_size + 2,
                                                   d_model=self.d_model,
                                                   num_layers=self.num_layers,
                                                   num_heads=self.num_heads,

@@ -22,9 +22,12 @@ class TransformerEncoder(layers.Layer):
     def call(self, inputs, mask=None):
         if mask is not None:
             padding_mask = tf.cast(mask[:, tf.newaxis, tf.newaxis, :], dtype="int32")
-        attention_output = self.attention(
-            query=inputs, value=inputs, key=inputs, attention_mask=padding_mask
-        )
+            attention_output = self.attention(
+                query=inputs, value=inputs, key=inputs, attention_mask=padding_mask
+            )
+        else:
+            attention_output = self.attention(
+                query=inputs, value=inputs, key=inputs)
         proj_input = self.layernorm_1(inputs + attention_output)
         proj_output = self.dense_proj(proj_input)
         return self.layernorm_2(proj_input + proj_output)
@@ -108,3 +111,48 @@ class TransformerDecoder(layers.Layer):
             axis=0,
         )
         return tf.tile(mask, mult)
+
+
+def KerasTransformer(vocab_size, d_model, dff, num_heads):
+    encoder_inputs = tf.keras.Input(shape=(None, ), name='encoder_inputs')
+    encoder_x = PositionalEmbedding(sequence_length=30,vocab_size=vocab_size, embed_dim=d_model)(encoder_inputs)
+    print(encoder_x.shape)
+    encoder_x = tf.keras.layers.Dropout(0.1)(encoder_x)
+
+    encoder_outputs = TransformerEncoder(embed_dim=d_model, dense_dim=dff, num_heads=num_heads)(encoder_x)
+    encoder = tf.keras.Model(encoder_inputs, encoder_outputs)
+
+    decoder_inputs = tf.keras.Input(shape=(None,), name="decoder_inputs")
+    # encoded_seq_inputs = tf.keras.Input(shape=(None, d_model), name="decoder_state_inputs")
+    encoded_seq_inputs = encoder([encoder_inputs])
+
+    decoder_x = PositionalEmbedding(sequence_length=30, vocab_size=vocab_size, embed_dim=d_model)(decoder_inputs)
+    decoder_x = tf.keras.layers.Dropout(0.1)(decoder_x)
+    decoder_x = TransformerDecoder(embed_dim=d_model, latent_dim=dff, num_heads=num_heads)(decoder_x, encoded_seq_inputs)
+    decoder_outputs = tf.keras.layers.Dense(vocab_size, activation='softmax', name='outputs')(decoder_x)
+    decoder = tf.keras.Model([decoder_inputs, encoded_seq_inputs], decoder_outputs)
+
+    decoder_outputs = decoder([decoder_inputs, encoder_outputs])
+    keras_transformer = tf.keras.Model(
+        [encoder_inputs, decoder_inputs], decoder_outputs, name='KerasTransformer'
+    )
+    return keras_transformer
+
+
+def model_plot(model, save_path):
+    tf.keras.utils.plot_model(model, to_file=save_path, show_shapes=False)
+    return None
+
+
+if __name__ == '__main__':
+    epochs=1
+    test_transformer = KerasTransformer(2000, 256, 512, 4)
+    print(test_transformer.summary())
+    model_plot(test_transformer, '../test_transformer.png')
+
+    # test_transformer.compile(
+    #     'rmsprop', loss="sparse_categorical_crossentropy", metrics=["accuracy"]
+    # )
+
+    # test_transformer.fit()
+

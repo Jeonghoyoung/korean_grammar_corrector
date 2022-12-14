@@ -15,6 +15,18 @@ def create_look_ahead_mask(x):
     padding_mask = create_padding_mask(x) # 패딩 마스크도 포함
     return tf.maximum(look_ahead_mask, padding_mask)
 
+def get_causal_attention_mask(inputs):
+    input_shape = tf.shape(inputs)
+    batch_size, sequence_length = input_shape[0], input_shape[1]
+    i = tf.range(sequence_length)[:, tf.newaxis]
+    j = tf.range(sequence_length)
+    mask = tf.cast(i >= j, dtype="int32")
+    mask = tf.reshape(mask, (1, input_shape[1], input_shape[1]))
+    mult = tf.concat(
+        [tf.expand_dims(batch_size, -1), tf.constant([1, 1], dtype=tf.int32)],
+        axis=0,
+    )
+    return tf.tile(mask, mult)
 
 '''
 디코더는 총 3개의 서브층으로 구성된다.
