@@ -116,7 +116,6 @@ class TransformerDecoder(layers.Layer):
 def KerasTransformer(vocab_size, d_model, dff, num_heads):
     encoder_inputs = tf.keras.Input(shape=(None, ), name='encoder_inputs')
     encoder_x = PositionalEmbedding(sequence_length=30,vocab_size=vocab_size, embed_dim=d_model)(encoder_inputs)
-    print(encoder_x.shape)
     encoder_x = tf.keras.layers.Dropout(0.1)(encoder_x)
 
     encoder_outputs = TransformerEncoder(embed_dim=d_model, dense_dim=dff, num_heads=num_heads)(encoder_x)
@@ -148,7 +147,7 @@ if __name__ == '__main__':
     epochs=1
     test_transformer = KerasTransformer(2000, 256, 512, 4)
     print(test_transformer.summary())
-    model_plot(test_transformer, '../test_transformer.png')
+    # model_plot(test_transformer, '../test_transformer.png')
 
     # test_transformer.compile(
     #     'rmsprop', loss="sparse_categorical_crossentropy", metrics=["accuracy"]

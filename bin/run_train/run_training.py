@@ -7,7 +7,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))  # 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))  # 상위 상위 폴더 내 모듈 참조
 from utils.tensorflow_preprocess import *
 from model.transformer_model import *
-from keras_model.keras_tensorflow_cust import *
+# from keras_model.keras_tensorflow_cust import *
+from keras_model.keras_tensorflow_cust_v3 import *
 
 
 class CustomSchedule(tf.keras.optimizers.schedules.LearningRateSchedule):

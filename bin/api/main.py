@@ -28,4 +28,5 @@ def repair(text: str = Form()):
 # Restful api 조사, raw model vs keras model 비교(12/15 오전), 작성한 코드 설명.
 # 이후 일정 : Multi GPU Training , BERT base 구현
 
-# uvicorn main:app --reload --host=0.0.0.0 --port=8000
+# Command : uvicorn main:app --reload --host=0.0.0.0 --port=8000
+# URI : http://127.0.0.1:8000/docs
